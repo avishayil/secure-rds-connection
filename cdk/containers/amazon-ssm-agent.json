@@ -1,0 +1,13 @@
+{
+	"Mgs": {
+		"Region": "",
+		"Endpoint": "",
+		"StopTimeoutMillis": 20000,
+		"SessionWorkersLimit": 20
+	},
+	"Agent": {
+		"Region": "",
+		"OrchestrationRootDir": "",
+		"ContainerMode": true
+	}
+}

@@ -1,0 +1,21 @@
+[[source]]
+url = 'https://pypi.python.org/simple'
+verify_ssl = true
+
+[dev-packages]
+secure_db_connection = {editable = true,path = "cdk"}
+black = "==22.6.0"
+isort = "==5.10.1"
+flake8 = "==4.0.1"
+flake8-docstrings = "==1.6.0"
+coverage = "*"
+yamllint = "*"
+pre-commit = "*"
+tox = "*"
+
+[packages]
+boto3 = "*"
+sshconf = "*"
+
+[requires]
+python_version = "3"
