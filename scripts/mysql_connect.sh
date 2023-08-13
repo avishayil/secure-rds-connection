@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Define the log file
+LOG_FILE="script.log"
+
 while getopts r:s: flag
 do
     case "${flag}" in
@@ -11,12 +14,18 @@ done
 STACKNAME=$stack
 REGION=$region
 
-DBNAME="$(aws cloudformation describe-stacks --stack-name=$STACKNAME --region=$REGION | jq -r '.Stacks[].Outputs[0].OutputValue')"
-USERNAME="$(aws cloudformation describe-stacks --stack-name=$STACKNAME --region=$REGION | jq -r '.Stacks[].Outputs[1].OutputValue')"
-AURORAEP="$(aws cloudformation describe-stacks --stack-name=$STACKNAME --region=$REGION | jq -r '.Stacks[].Outputs[2].OutputValue')"
+echo "Fetching database information..." >> "$LOG_FILE"
+STACK_OUTPUTS="$(aws cloudformation describe-stacks --stack-name=$STACKNAME --region=$REGION)"
 
+DBNAME="$(echo "$STACK_OUTPUTS" | jq -r '.Stacks[].Outputs[] | select(.OutputKey | contains("DBConstructAuroraDatabaseName")) | .OutputValue')"
+USERNAME="$(echo "$STACK_OUTPUTS" | jq -r '.Stacks[].Outputs[] | select(.OutputKey | contains("DBConstructAuroraRDSUserName")) | .OutputValue')"
+AURORAEP="$(echo "$STACK_OUTPUTS" | jq -r '.Stacks[].Outputs[] | select(.OutputKey | contains("DBConstructAuroraClusterEndpoint")) | .OutputValue')"
+
+echo "Generating authentication token..." >> "$LOG_FILE"
 TOKEN="$(aws rds generate-db-auth-token --hostname=$AURORAEP --port 3306 --username=$USERNAME --region=$REGION)"
 
-# set -x
+echo "Connecting to the database..." >> "$LOG_FILE"
+# Redirect both stdout and stderr to the log file
 mysql -h 127.0.0.1 -P 9999 --enable-cleartext-plugin --user=$USERNAME --password=$TOKEN
-# set +x
+
+echo "Script execution completed." >> "$LOG_FILE"

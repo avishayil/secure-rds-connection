@@ -56,7 +56,7 @@ for output in outputs:
 
 print("Setting up proxy...")
 
-proxy_command = f'sh -c "aws ssm start-session --region {region} --target %h --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters portNumber=3306,localPortNumber=9999,host={rds_host}"'  # noqa: E501
+proxy_command = f'sh -c "aws ssm start-session --region {region} --target %n --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters portNumber=3306,localPortNumber=9999,host={rds_host}"'  # noqa: E501
 
 c = read_ssh_config(expanduser("~/.ssh/config"))
 
@@ -65,7 +65,7 @@ try:
 except Exception:
     pass
 finally:
-    c.add("ssm-db-proxy", Hostname=ssm_target, ProxyCommand=proxy_command)
+    c.add("\"ssm-db-proxy\"", Hostname=ssm_target, ProxyCommand=proxy_command)
     c.save()
 
 print(
