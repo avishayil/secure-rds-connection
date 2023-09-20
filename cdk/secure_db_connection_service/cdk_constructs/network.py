@@ -124,8 +124,28 @@ class NetworkConstruct(Construct):
             ec2.Port.tcp(443),
             "Allow traffic from container to interface vpc endpoints",
         )
+        
+        ec2_instacnce_sg = ec2.SecurityGroup(
+            self, "DemoInstanceSecurityGroup",
+            vpc=network_vpc,
+            allow_all_outbound=False 
+        )
+
+        # Allow inbound SSH access (you can customize the rules as needed)
+        ec2_instacnce_sg.add_ingress_rule(
+            container_sg,
+            ec2.Port.tcp(22),
+            "Allow SSH Access"
+        )
+
+        container_sg.add_egress_rule(
+            ec2_instacnce_sg,
+            connection=ec2.Port.tcp(22),
+            description="Allow traffic from container to ec2 instance",
+        )
 
         self.vpc = network_vpc
         self.db_sg = db_sg
         self.init_lambda_security_group = init_lambda_security_group
         self.container_sg = container_sg
+        self.ec2_instacnce_sg = ec2_instacnce_sg

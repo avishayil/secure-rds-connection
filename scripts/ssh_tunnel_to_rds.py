@@ -58,7 +58,13 @@ print("Setting up proxy...")
 
 proxy_command = f'sh -c "aws ssm start-session --region {region} --target %n --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters portNumber=3306,localPortNumber=9999,host={rds_host}"'  # noqa: E501
 
-c = read_ssh_config(expanduser("~/.ssh/config"))
+filename = os.path.expanduser("~/.ssh/config")
+if not os.path.exists(filename):
+    with open(filename, "w"):
+        pass
+    print(f"File ~/.ssh/config didn't exist. Creating the file...")
+
+c = read_ssh_config(filename)
 
 try:
     c.remove("ssm-db-proxy")
