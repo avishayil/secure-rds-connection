@@ -12,12 +12,14 @@ class EC2Construct(Construct):
     def __init__(
         self,
         scope: Construct,
-        id_: str,
+        id: str,
+        *,
+        prefix=None,
         vpc: ec2.IVpc,
         instance_security_group: ec2.SecurityGroup,
     ) -> None:
         """Construct initialization."""
-        super().__init__(scope, id_)
+        super().__init__(scope, id)
 
         amzn_linux: IMachineImage = ec2.MachineImage.latest_amazon_linux2(
             edition=ec2.AmazonLinuxEdition.STANDARD,
