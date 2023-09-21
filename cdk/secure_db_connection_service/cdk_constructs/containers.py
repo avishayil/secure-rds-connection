@@ -110,7 +110,7 @@ class ContainersConstruct(Construct):
             task_role=ecs_task_role,
             runtime_platform=ecs.RuntimePlatform(
                 operating_system_family=ecs.OperatingSystemFamily.LINUX,
-                cpu_architecture=ecs.CpuArchitecture.X86_64
+                cpu_architecture=ecs.CpuArchitecture.X86_64,
             ),
         )
 

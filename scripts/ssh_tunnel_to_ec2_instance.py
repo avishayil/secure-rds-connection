@@ -1,7 +1,6 @@
 """Script to add SSH configuration for SSM tunnel initiation."""
 
 import os
-from os.path import expanduser
 import sys
 
 import aws_cdk.cx_api as cx_api
@@ -10,10 +9,12 @@ from sshconf import read_ssh_config
 
 
 def is_running_on_windows():
-    if sys.platform.startswith('win'):
+    """Check if the running platform is Windows."""
+    if sys.platform.startswith("win"):
         return True
     else:
         return False
+
 
 cloud_assembly = cx_api.CloudAssembly("cdk.out")
 stack_name = cloud_assembly.stacks[0].stack_name
@@ -53,32 +54,32 @@ cluster_name = ecs_task_arn.split(":")[5].split("/")[1]
 task_id = ecs_task_arn.split(":")[5].split("/")[2]
 container_runtime_id = containers_list[0]["runtimeId"]
 
-ec2_client = boto3.client('ec2', region_name=region) 
+ec2_client = boto3.client("ec2", region_name=region)
 response = ec2_client.describe_instances(
     Filters=[
         {
-            'Name': 'tag:aws:cloudformation:stack-name',
-            'Values': [stack_name],
+            "Name": "tag:aws:cloudformation:stack-name",
+            "Values": [stack_name],
         },
         {
-            'Name': 'instance-state-name',
-            'Values': ['running'],  # Adjust this state as needed
+            "Name": "instance-state-name",
+            "Values": ["running"],  # Adjust this state as needed
         },
     ]
 )
 
 ec2_instance_private_ip = None
 # Extract the EC2 instance details from the response
-if 'Reservations' in response:
-    for reservation in response['Reservations']:
-        for instance in reservation['Instances']:           
-            ec2_instance_private_ip = instance['PrivateIpAddress']
-          
+if "Reservations" in response:
+    for reservation in response["Reservations"]:
+        for instance in reservation["Instances"]:
+            ec2_instance_private_ip = instance["PrivateIpAddress"]
+
 
 # If no instances were found
 else:
     print("No EC2 instances found in the CloudFormation stack.")
-    
+
 ssm_target = f"ecs:{cluster_name}_{task_id}_{container_runtime_id}"
 
 cf_client = boto3.client("cloudformation", region_name=region)
@@ -94,22 +95,24 @@ print("Setting up proxy...")
 
 running_on_windows = is_running_on_windows()
 
-if ec2_instance_private_ip == None:
-    print("Failed to retrieve ec2 instance private IP. Validate that the instance it up and running or update the state filter value\n")
+if ec2_instance_private_ip is None:
+    print(
+        "Failed to retrieve ec2 instance private IP. Validate that the instance it up and running or update the state filter value\n"
+    )
     exit(0)
 
 
 if running_on_windows:
-    proxy_command = f'cmd /k "aws ssm start-session --region {region} --target %h --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters portNumber=22,localPortNumber=9999,host={ec2_instance_private_ip}"'  
+    proxy_command = f'cmd /k "aws ssm start-session --region {region} --target %h --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters portNumber=22,localPortNumber=9999,host={ec2_instance_private_ip}"'
 else:
-    proxy_command = f'sh -c "aws ssm start-session --region {region} --target %h --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters portNumber=22,localPortNumber=9999,host={ec2_instance_private_ip}"'  
+    proxy_command = f'sh -c "aws ssm start-session --region {region} --target %h --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters portNumber=22,localPortNumber=9999,host={ec2_instance_private_ip}"'
 
 
 filename = os.path.expanduser("~/.ssh/config")
 if not os.path.exists(filename):
     with open(filename, "w"):
         pass
-    print(f"File ~/.ssh/config didn't exist. Creating the file...")
+    print("File ~/.ssh/config didn't exist. Creating the file...")
 
 c = read_ssh_config(filename)
 
@@ -122,7 +125,9 @@ finally:
     c.save()
 
 
-command_to_run = "scripts\ssh_connect.bat" if running_on_windows else "./scripts/ssh_connect.sh"
+command_to_run = (
+    "scripts\\ssh_connect.bat" if running_on_windows else "./scripts/ssh_connect.sh"
+)
 print(
     f"Run the following command to activate the tunnel proxy:\r\nssh ssm-ec2-proxy\r\nand then on another shell, run\r\n{command_to_run} <path to private key>\r\nto connect to the database with temporary credentials"  # noqa: E501
 )

@@ -80,7 +80,7 @@ class NetworkConstruct(Construct):
                 },
                 physical_resource_id=cr.PhysicalResourceId.from_response(
                     response_path="PrefixLists.0.PrefixListId"
-                )
+                ),
             ),
             policy=cr.AwsCustomResourcePolicy.from_sdk_calls(
                 resources=cr.AwsCustomResourcePolicy.ANY_RESOURCE
@@ -125,18 +125,14 @@ class NetworkConstruct(Construct):
             ec2.Port.tcp(443),
             "Allow traffic from container to interface vpc endpoints",
         )
-        
+
         ec2_instacnce_sg = ec2.SecurityGroup(
-            self, "DemoInstanceSecurityGroup",
-            vpc=network_vpc,
-            allow_all_outbound=False 
+            self, "DemoInstanceSecurityGroup", vpc=network_vpc, allow_all_outbound=False
         )
 
         # Allow inbound SSH access (you can customize the rules as needed)
         ec2_instacnce_sg.add_ingress_rule(
-            container_sg,
-            ec2.Port.tcp(22),
-            "Allow SSH Access"
+            container_sg, ec2.Port.tcp(22), "Allow SSH Access"
         )
 
         container_sg.add_egress_rule(

@@ -1,7 +1,6 @@
 """Script to add SSH configuration for SSM tunnel initiation."""
 
 import os
-from os.path import expanduser
 
 import aws_cdk.cx_api as cx_api
 import boto3
@@ -62,7 +61,7 @@ filename = os.path.expanduser("~/.ssh/config")
 if not os.path.exists(filename):
     with open(filename, "w"):
         pass
-    print(f"File ~/.ssh/config didn't exist. Creating the file...")
+    print("File ~/.ssh/config didn't exist. Creating the file...")
 
 c = read_ssh_config(filename)
 
@@ -71,7 +70,7 @@ try:
 except Exception:
     pass
 finally:
-    c.add("\"ssm-db-proxy\"", Hostname=ssm_target, ProxyCommand=proxy_command)
+    c.add('"ssm-db-proxy"', Hostname=ssm_target, ProxyCommand=proxy_command)
     c.save()
 
 print(

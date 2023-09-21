@@ -23,7 +23,6 @@ class DBConstruct(Construct):
         scope: Construct,
         id: str,
         *,
-        prefix=None,
         vpc: ec2.IVpc,
         security_group: ec2.ISecurityGroup
     ):
