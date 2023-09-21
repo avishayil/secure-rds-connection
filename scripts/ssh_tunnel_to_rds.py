@@ -66,7 +66,7 @@ if not os.path.exists(filename):
 c = read_ssh_config(filename)
 
 try:
-    c.remove("ssm-db-proxy")
+    c.remove('"ssm-db-proxy"')
 except Exception:
     pass
 finally:
