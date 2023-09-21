@@ -66,6 +66,7 @@ class NetworkConstruct(Construct):
         s3_prefix_list_cr = cr.AwsCustomResource(
             self,
             "S3PrefixListCR",
+            install_latest_aws_sdk=True,
             on_update=cr.AwsSdkCall(
                 service="EC2",
                 action="describePrefixLists",
@@ -79,7 +80,7 @@ class NetworkConstruct(Construct):
                 },
                 physical_resource_id=cr.PhysicalResourceId.from_response(
                     response_path="PrefixLists.0.PrefixListId"
-                ),
+                )
             ),
             policy=cr.AwsCustomResourcePolicy.from_sdk_calls(
                 resources=cr.AwsCustomResourcePolicy.ANY_RESOURCE

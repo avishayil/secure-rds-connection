@@ -10,8 +10,7 @@ class EC2Construct(Construct):
     def __init__(self, scope: Construct, id_: str, vpc: ec2.IVpc,  instance_security_group: ec2.SecurityGroup) -> None:
         super().__init__(scope, id_)
         
-        amzn_linux: IMachineImage = ec2.MachineImage.latest_amazon_linux(
-            generation=ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+        amzn_linux: IMachineImage = ec2.MachineImage.latest_amazon_linux2(
             edition=ec2.AmazonLinuxEdition.STANDARD,
             virtualization=ec2.AmazonLinuxVirt.HVM,
             storage=ec2.AmazonLinuxStorage.GENERAL_PURPOSE,

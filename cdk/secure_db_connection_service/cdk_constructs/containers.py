@@ -19,9 +19,7 @@ class ContainersConstruct(Construct):
         scope: Construct,
         id: str,
         *,
-        prefix=None,
         vpc: ec2.IVpc,
-        rds_endpoint: str,
         container_security_group: ec2.ISecurityGroup,
     ):
         """Construct initialization."""
@@ -44,12 +42,11 @@ class ContainersConstruct(Construct):
             src=DockerImageName(name=ecr_image.image_uri),
             dest=DockerImageName(name=ecr_repository.repository_uri),
         )
-
         ecs_cluster = ecs.Cluster(self, "Cluster", vpc=vpc)
 
         ecs_task_role = iam.Role(
             self,
-            "FlagmisthEcsTaskRole",
+            "TaskRole",
             assumed_by=iam.ServicePrincipal("ecs-tasks.amazonaws.com"),
             inline_policies={
                 "GenericECSTask": iam.PolicyDocument(
@@ -113,11 +110,11 @@ class ContainersConstruct(Construct):
             task_role=ecs_task_role,
             runtime_platform=ecs.RuntimePlatform(
                 operating_system_family=ecs.OperatingSystemFamily.LINUX,
-                cpu_architecture=ecs.CpuArchitecture.X86_64,
+                cpu_architecture=ecs.CpuArchitecture.X86_64
             ),
         )
 
-        ecs_nginx_container = ecs_task_definition.add_container(  # noqa: F841
+        ecs_ssm_agent_container = ecs_task_definition.add_container(  # noqa: F841
             "ssm-agent",
             image=ecs.ContainerImage.from_ecr_repository(
                 repository=ecr_repository, tag="latest"
@@ -138,7 +135,7 @@ class ContainersConstruct(Construct):
             vpc_subnets=ec2.SubnetSelection(
                 subnet_type=ec2.SubnetType.PRIVATE_ISOLATED
             ),
-            enable_execute_command=False,
+            enable_execute_command=True,
         )
 
         cdk.CfnOutput(self, "ECSClusterArn", value=ecs_cluster.cluster_arn)

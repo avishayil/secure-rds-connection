@@ -2,7 +2,7 @@
 
 from aws_cdk import Stack
 from cdk_constructs.containers import ContainersConstruct
-from cdk_constructs.ec2construct import EC2Construct
+from cdk_constructs.ec2 import EC2Construct
 from cdk_constructs.db import DBConstruct
 from cdk_constructs.lambda_ import LambdaConstruct
 from cdk_constructs.network import NetworkConstruct
@@ -37,11 +37,10 @@ class SecureDbConnectionStack(Stack):
             self,
             "ContainersConstruct",
             vpc=network_construct.vpc,
-            rds_endpoint=db_construct.db_cluster.cluster_endpoint,
             container_security_group=network_construct.container_sg,
         )
 
-        # # Declare dependencies
+        # Declare dependencies
 
         lambda_construct.node.add_dependency(db_construct)
         containers_construct.node.add_dependency(lambda_construct)
