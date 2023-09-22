@@ -19,11 +19,11 @@ class LambdaConstruct(Construct):
         self,
         scope: Construct,
         id: str,
-        *,
-        prefix=None,
         vpc: ec2.IVpc,
         init_lambda_security_group: ec2.ISecurityGroup,
-        db_secret: sme.ISecret
+        db_secret: sme.ISecret,
+        *,
+        prefix=None,
     ):
         """Construct initialization."""
         super().__init__(scope, id)

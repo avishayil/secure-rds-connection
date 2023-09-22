@@ -22,10 +22,10 @@ class DBConstruct(Construct):
         self,
         scope: Construct,
         id: str,
+        vpc: ec2.IVpc,
+        security_group: ec2.ISecurityGroup,
         *,
         prefix=None,
-        vpc: ec2.IVpc,
-        security_group: ec2.ISecurityGroup
     ):
         """Construct initialization."""
         super().__init__(scope, id)

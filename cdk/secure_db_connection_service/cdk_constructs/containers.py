@@ -18,10 +18,10 @@ class ContainersConstruct(Construct):
         self,
         scope: Construct,
         id: str,
-        *,
-        prefix=None,
         vpc: ec2.IVpc,
         container_security_group: ec2.ISecurityGroup,
+        *,
+        prefix=None,
     ):
         """Construct initialization."""
         super().__init__(scope, id)

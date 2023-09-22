@@ -13,10 +13,10 @@ class EC2Construct(Construct):
         self,
         scope: Construct,
         id: str,
-        *,
-        prefix=None,
         vpc: ec2.IVpc,
         instance_security_group: ec2.SecurityGroup,
+        *,
+        prefix=None,
     ) -> None:
         """Construct initialization."""
         super().__init__(scope, id)
@@ -54,4 +54,5 @@ class EC2Construct(Construct):
             role=role,
             # replace the key_name with comment to enter custom key or get as a parameter
             key_name="EyalKeyPairIreland",
+            require_imdsv2=True,
         )
