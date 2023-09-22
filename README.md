@@ -66,7 +66,7 @@ $ pipenv install --dev
 At this point you can now deploy the CloudFormation template for this solution.
 
 ```
-$ cdk deploy
+$ ./deploy.py --key-name KEY_NAME
 ```
 
 To add additional dependencies, for example other CDK libraries, just add

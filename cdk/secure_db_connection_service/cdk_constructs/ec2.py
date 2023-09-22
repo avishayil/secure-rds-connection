@@ -15,6 +15,7 @@ class EC2Construct(Construct):
         id: str,
         vpc: ec2.IVpc,
         instance_security_group: ec2.SecurityGroup,
+        key_name: str,
         *,
         prefix=None,
     ) -> None:
@@ -52,7 +53,6 @@ class EC2Construct(Construct):
             ),
             security_group=instance_security_group,
             role=role,
-            # replace the key_name with comment to enter custom key or get as a parameter
-            key_name="EyalKeyPairIreland",
+            key_name=key_name,
             require_imdsv2=True,
         )

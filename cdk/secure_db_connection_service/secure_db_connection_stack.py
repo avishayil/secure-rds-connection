@@ -1,6 +1,6 @@
 """CDK Stack module."""
 
-from aws_cdk import Stack
+from aws_cdk import CfnParameter, Stack
 from cdk_constructs.containers import ContainersConstruct
 from cdk_constructs.db import DBConstruct
 from cdk_constructs.ec2 import EC2Construct
@@ -15,6 +15,15 @@ class SecureDbConnectionStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         """Stack initialization."""
         super().__init__(scope, construct_id, **kwargs)
+
+        # Parameters
+
+        key_name_parameter = CfnParameter(
+            self,
+            "KeyNameParam",
+            type="String",
+            description="EC2 KeyPair name for provisioning the instance",
+        )
 
         network_construct = NetworkConstruct(self, "NetworkConstruct")
 
@@ -40,15 +49,15 @@ class SecureDbConnectionStack(Stack):
             container_security_group=network_construct.container_sg,
         )
 
-        # Declare dependencies
-
-        lambda_construct.node.add_dependency(db_construct)
-        containers_construct.node.add_dependency(lambda_construct)
-
         ec2_construct = EC2Construct(
             self,
             "EC2Construct",
             network_construct.vpc,
             instance_security_group=network_construct.ec2_instacnce_sg,
+            key_name=key_name_parameter.value_as_string,
         )
+        # Declare dependencies
+
+        lambda_construct.node.add_dependency(db_construct)
         ec2_construct.node.add_dependency(db_construct)
+        containers_construct.node.add_dependency(lambda_construct)
