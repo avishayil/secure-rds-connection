@@ -19,7 +19,13 @@ def main():
     # Run the cdk deploy command with the provided KeyName parameter
     try:
         subprocess.run(
-            ["cdk", "deploy", "--parameters", f"KeyNameParam={args.key_name}"],
+            [
+                "cdk",
+                "deploy",
+                "--parameters",
+                f"KeyNameParam={args.key_name}",
+                "--require-approval=never",
+            ],
             check=True,
         )
     except subprocess.CalledProcessError as e:
