@@ -29,8 +29,6 @@ jobs:
           # install your Python dependencies here
           npm install -g aws-cdk
       - name: Deploy to AWS
-        run: cdk deploy --app="python3 ${PWD}/cdk/my_service/app.py" --require-approval=never
+        run: cdk synth
         env:
           AWS_REGION: eu-west-1
-      - name: Destroy stack
-        run: cdk destroy --app="python3 ${PWD}/cdk/my_service/app.py" --force
